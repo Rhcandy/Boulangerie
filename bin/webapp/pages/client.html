@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Boulangerie - Interface Client</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <link href="../assets/img/favicon.png" rel="icon">
+  <link href="../assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/css/main.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="header" class="header d-flex align-items-center sticky-top">
+    <div class="container d-flex align-items-center justify-content-between">
+      <a href="#" class="logo d-flex align-items-center">
+        <h1>Boulangerie</h1>
+      </a>
+      <nav class="navbar">
+        <ul class="nav">
+          <li><a class="nav-link active" href="#catalogue">Catalogue</a></li>
+          <li><a class="nav-link" href="#panier">Mon Panier</a></li>
+          <li><a class="nav-link" href="#commandes">Mes Commandes</a></li>
+          <li><a class="nav-link" href="starter-page.html">Gestion</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container mt-5">
+
+    <!-- Catalogue Produits -->
+    <section id="catalogue" class="mb-5">
+      <h2>Catalogue des Produits</h2>
+      <div class="d-flex justify-content-between mb-3">
+        <input type="text" id="searchInput" class="form-control w-50" placeholder="Rechercher un produit...">
+        <select id="categoryFilter" class="form-select w-25">
+          <option value="all">Toutes les categories</option>
+          <option value="pain">Pain</option>
+          <option value="patisserie">Patisserie</option>
+          <option value="viennoiserie">Viennoiserie</option>
+          <option value="snack">Snacks</option>
+        </select>
+      </div>
+      <div id="productsList" class="row">
+        <!-- Exemple de produit -->
+        <div class="col-md-4 mb-3 product-item" data-category="pain">
+          <div class="card">
+            <img src="assets/img/b1.jpg" class="card-img-top" alt="Produit">
+            <div class="card-body">
+              <h5 class="card-title">Pain Tradition</h5>
+              <p class="card-text">Un delicieux pain fait maison.</p>
+              <p class="card-text"><strong>Prix : 20ar</strong></p>
+              <button class="btn btn-primary">Ajouter au panier</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-3 product-item" data-category="viennoiserie">
+          <div class="card">
+            <img src="assets/img/b3.jpg" class="card-img-top" alt="Produit">
+            <div class="card-body">
+              <h5 class="card-title">Croissant</h5>
+              <p class="card-text">Un croissant au beurre pur.</p>
+              <p class="card-text"><strong>Prix : 20ar</strong></p>
+              <button class="btn btn-primary">Ajouter au panier</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-3 product-item" data-category="patisserie">
+          <div class="card">
+            <img src="assets/img/b4.jpg" class="card-img-top" alt="Produit">
+            <div class="card-body">
+              <h5 class="card-title">Eclair au chocolat</h5>
+              <p class="card-text">Un dessert exquis pour les gourmands.</p>
+              <p class="card-text"><strong>Prix : 30 ar</strong></p>
+              <button class="btn btn-primary">Ajouter au panier</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Panier -->
+    <section id="panier" class="mb-5">
+      <h2>Mon Panier</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Produit</th>
+            <th>Quantite</th>
+            <th>Prix Unitaire</th>
+            <th>Total</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- PANIER -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Commandes -->
+    <section id="commandes">
+      <h2>Mes Commandes</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Date</th>
+            <th>Produits</th>
+            <th>Total</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- COMMANDES -->
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-white text-center py-3">
+    <p>&copy; 2025 Boulangerie matsiro</p>
+  </footer>
+
+  <!-- Local JS Files -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script>
+
+    // JS an'i chat tsy aiko fa mandeha XD 
+
+    // Gestion du filtre de categorie
+    document.getElementById('categoryFilter').addEventListener('change', function () {
+      const selectedCategory = this.value;
+      const products = document.querySelectorAll('.product-item');
+      products.forEach(product => {
+        if (selectedCategory === 'all' || product.dataset.category === selectedCategory) {
+          product.style.display = 'block';
+        } else {
+          product.style.display = 'none';
+        }
+      });
+    });
+
+    // Gestion de la recherche
+    document.getElementById('searchInput').addEventListener('input', function () {
+      const searchText = this.value.toLowerCase();
+      const products = document.querySelectorAll('.product-item');
+      products.forEach(product => {
+        const title = product.querySelector('.card-title').textContent.toLowerCase();
+        if (title.includes(searchText)) {
+          product.style.display = 'block';
+        } else {
+          product.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
