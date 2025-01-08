@@ -1,15 +1,19 @@
 <%@ page import="model.*" %>
-<%@ page import="com.google.gson.Gson" %>
-
 <%@ page import="java.util.*" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+ List<Categories> Categs = (List<Categories>) request.getAttribute("categories");
+ List<Ingredients> Ingred = (List<Ingredients>) request.getAttribute("Ingredients"); 
+ List<Produit> Produits = (List<Produit>) request.getAttribute("Produits");
+ List<Fabrication> Fabrications = (List<Fabrication>) request.getAttribute("Fabrications");
+%>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title >Boulangerie - Gestion</title>
+  <title>Boulangerie - Gestion</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -23,10 +27,11 @@
 </head>
 
 <body>
-  <header id="header" class="header d-flex align-items-center sticky-top"  style="background-color: rgb(155, 79, 79);">
+  
+  <header id="header" class="header d-flex align-items-center sticky-top">
     <div class="container d-flex align-items-center justify-content-between">
       <a href="#" class="logo d-flex align-items-center">
-        <h1 style="color:white;">Boulangerie</h1>
+        <h1>Boulangerie</h1>
       </a>
       <nav class="navbar">
         <ul class="nav">
@@ -46,19 +51,17 @@
   <!-- Contenu principal -->
   <main class="container mt-5">
 
-    <!-- Gestion des Produits -->
+      <!-- Gestion des Produits -->
     <section id="produits" class="mb-5">
       <h2>Gestion des Produits</h2>
       <div class="d-flex justify-content-between mb-3">
         <button class="btn btn-success">Ajouter un produit</button>
-        <input type="text" class="form-control w-50" placeholder="Rechercher un produit...">
       </div>
        <div class="d-flex justify-content-between mb-3">
         <input type="text" id="searchInput" class="form-control w-50" placeholder="Rechercher un produit...">
         <select id="categoryFilter" class="form-select w-25">
-          <option value="all">Toutes les catégories</option>
+          <option value="all">Toutes les categories</option>
           <%
-            List<Categories> Categs = (List<Categories>) request.getAttribute("categories");
             for (Categories cat : Categs) {
           %>
           <option value="<%=cat.getNom()%>"><%=cat.getNom()%></option>
@@ -66,10 +69,9 @@
         </select>
 
         <select id="ingredientFilter" class="form-select w-25">
-          <option value="all">Tous les ingrédients</option>
+          <option value="all">Tous les ingredients</option>
           <%
-            List<Ingredients> Ingred = (List<Ingredients>) request.getAttribute("Ingredients");
-            for (Ingredients ingredient : Ingred) {
+           for (Ingredients ingredient : Ingred) {
           %>
           <option value="<%=ingredient.getNom()%>"><%=ingredient.getNom()%></option>
          <% } %>
@@ -88,8 +90,6 @@
         </thead>
         <tbody>
         <%
-            List<Produit> Produits = (List<Produit>) request.getAttribute("Produits");
-            
             for (Produit produit : Produits) {
                List<Details_Recettes> detailsRecettes = produit.getRecette().getComposant();
                 List<String> ingredientNames = new ArrayList<>();
@@ -114,8 +114,7 @@
         </tbody>
       </table>
     </section>
-
-    <!-- Gestion des Ingredients -->
+<!-- Gestion des Ingredients -->
     <section id="ingredients" class="mb-5">
       <h2>Gestion des Ingredients</h2>
       <div class="d-flex justify-content-between mb-3">
@@ -126,19 +125,18 @@
         <thead>
           <tr>
             <th>Nom</th>
-            <th>Unite</th>
             <th>Stock</th>
+            <th>Unite</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
         <%
-            List<Ingredients> Ingreds = (List<Ingredients>) request.getAttribute("Ingredients");
-            for (Ingredients ingredient : Ingreds) {
+            for (Ingredients ingredient : Ingred) {
         %>
             <tr>
-              <td><%=ingredient.getNom()%></td> 
               <td><%=ingredient.getUnite().getNom()%></td>
+              <td><%=ingredient.getNom()%></td> 
               <td><%=ingredient.getstock()%></td> 
               <td>
                 <button class="btn btn-warning">Modifier</button>
@@ -153,7 +151,9 @@
     <!-- Gestion des Fabrications -->
     <section id="fabrications" class="mb-5">
       <h2>Gestion des Fabrications</h2>
-      <button class="btn btn-primary mb-3">Creer un plan de fabrication</button>
+      <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createFabricationModal">
+        Fabriquer
+      </button>
       <table class="table table-striped">
         <thead>
           <tr>
@@ -167,7 +167,7 @@
         </thead>
         <tbody>
         <%
-            List<Fabrication> Fabrications = (List<Fabrication>) request.getAttribute("Fabrications");
+           
             for (Fabrication Fabrication : Fabrications) {
         %>
             <tr>
@@ -254,6 +254,41 @@
       </div>
     </section>
 
+  <!-- Modal pour créer une nouvelle fabrication -->
+  <div class="modal fade" id="createFabricationModal" tabindex="-1" aria-labelledby="createFabricationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createFabricationModalLabel">Fabrication</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Formulaire pour créer une fabrication -->
+        <form action="CreateFabricationServlet" method="POST">
+          <div class="mb-3">
+            <select class="form-select"  name="produit" required>
+              <option value="">Selectionnez un produit</option>
+              <%
+                for (Produit produit : Produits) {
+              %>
+                <option value="<%=produit.getId_Produit()%>"><%=produit.getNom()%></option>
+              <% } %>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="qtt" class="form-label">Quantite</label>
+            <input type="number" class="form-control"  name="qtt" required min="1">
+          </div>
+          <input type="submit" class="btn btn-primary" value="Fabriquer">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+  </div>
+
   </main>
 
   <!-- Footer -->
@@ -263,7 +298,7 @@
 
   <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script>
+  <script>
       // Gestion du filtre par catégorie
       document.getElementById('categoryFilter').addEventListener('change', function () {
         const selectedCategory = this.value.toLowerCase();
@@ -306,9 +341,7 @@
           }
         });
       }
-</script>
-
-
+  </script>
 </body>
 
 </html>

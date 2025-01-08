@@ -35,12 +35,12 @@ public class Ingredients {
     public void setUnite(Unites unite) {
         Unite = unite;
     }
-    public  int getstock(){
-        int result=0;
+    public  double getstock(){
+        double result=0;
         try(GenericEntity service=new GenericEntity(Connector.getConnection());) {
-          RowResult resul=service.execute("SELECT qtt_reste_totale FROM vue_qtt_reste_stock_Ingredient where Id_Produit ?",this.getIdIngredients());
+          RowResult resul=service.execute("SELECT qtt_reste_totale FROM vue_qtt_reste_stock_Ingredient where Id_Ingredients = ?",this.getIdIngredients());
           if (resul.next()) { 
-            result= resul.getInt("qtt_reste_totale"); // Supposons que RowResult a une méthode pour obtenir le ResultSet
+            return resul.getDouble("qtt_reste_totale"); // Supposons que RowResult a une méthode pour obtenir le ResultSet
           }
         } catch (Exception e) {
            System.out.println(e.getMessage());

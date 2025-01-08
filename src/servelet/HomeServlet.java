@@ -60,8 +60,7 @@ public class HomeServlet extends HttpServlet {
             request.setAttribute("error", "Error:" + e.getMessage());
             e.printStackTrace();
         }
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/pages/Transformation.jsp");
-        dispatcher.forward(request, response);
+       
     }
 
 }

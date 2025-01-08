@@ -1,4 +1,5 @@
 <project name="Boulangerie" default="build-war" basedir=".">
+
     <!-- Déclaration des répertoires -->
     <property name="src.dir" value="src"/>
     <property name="web.dir" value="src/webapp"/>

@@ -52,11 +52,13 @@ public class Produit {
         Categorie = categorie;
     }
     
-    public  int getstock(){
-        int result=0;
+    public  double getstock(){
+        double result=0;
         try(GenericEntity service=new GenericEntity(Connector.getConnection());) {
           RowResult resul=service.execute("SELECT qtt_reste_totale FROM vue_qtt_reste_totale where Id_Produit = ?",this.getId_Produit());
-            return resul.getInt("qtt_reste_totale"); // Supposons que RowResult a une méthode pour obtenir le ResultSet
+          if (resul.next()) { 
+            return resul.getDouble("qtt_reste_totale");
+          } // Supposons que RowResult a une méthode pour obtenir le ResultSet
         } catch (Exception e) {
            System.out.println(e.getMessage());
         }
@@ -66,9 +68,10 @@ public class Produit {
     public  double getprixvente(){
         double result=0;
         try(GenericEntity service=new GenericEntity(Connector.getConnection());) {
-            System.err.println("makatyyyy");
           RowResult resul=service.execute("SELECT prix_vente FROM vue_prix_vente where Id_Produit = ?",this.getId_Produit());
-            return resul.getDouble("prix_vente"); // Supposons que RowResult a une méthode pour obtenir le ResultSet
+            if (resul.next()) {
+                return resul.getDouble("prix_vente"); // Supposons que RowResult a une méthode pour obtenir le ResultSet
+            }
         } catch (Exception e) {
            System.out.println(e.getMessage());
         }
