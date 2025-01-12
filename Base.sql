@@ -209,6 +209,50 @@ WHERE
 GROUP BY
     Id_Produit;
 
+CREATE OR REPLACE FUNCTION public.update_qtt_reste()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+DECLARE
+    fabrication RECORD;
+    qtt_restante NUMERIC(15,2) := NEW.qtt; -- Quantit‚ restante … d‚duire
+BEGIN
+    -- Boucle pour parcourir les fabrications valides
+    LOOP
+        -- Recherche de la premiŠre fabrication valide pour le produit concern‚
+        SELECT * INTO fabrication
+        FROM Fabrication_
+        WHERE Id_Produit = NEW.Id_Produit
+          AND Dt_Expiration > NOW()
+          AND qtt_reste > 0
+        ORDER BY Dt_Fabrique
+        LIMIT 1;
+
+        -- Si aucune fabrication valide n'est trouv‚e, on lŠve une exception
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'Manque en stock d‚sol‚ pour le produit ID %', NEW.Id_Produit;
+        END IF;
+
+        -- Si la quantit‚ restante dans la fabrication est suffisante
+        IF fabrication.qtt_reste >= qtt_restante THEN
+            UPDATE Fabrication_
+            SET qtt_reste = qtt_reste - qtt_restante
+            WHERE Id_Fabrication_ = fabrication.Id_Fabrication_;
+            EXIT; -- Sortir de la boucle
+        ELSE
+            -- Sinon, on utilise toute la quantit‚ restante de cette fabrication
+            qtt_restante := qtt_restante - fabrication.qtt_reste;
+            UPDATE Fabrication_
+            SET qtt_reste = 0
+            WHERE Id_Fabrication_ = fabrication.Id_Fabrication_;
+        END IF;
+    END LOOP;
+
+    RETURN NEW;
+END;
+$BODY$;
 
 
 

@@ -1,17 +1,23 @@
 package model;
 
+
 import org.entityframework.tools.Col;
+import org.entityframework.tools.FK;
 import org.entityframework.tools.Primary;
 import org.entityframework.tools.Table;
 
 @Table(name = "Details_Recettes")
 public class Details_Recettes {
     @Primary(auto = true)
-    @Col(name = "Id_Details_Recettes")
     private int Id_Details_Recettes;
-    @Col(name = "qtt")
     private double qtt;
-    @Col(name = "Id_Ingredients", reference = "Id_Ingredients")
+
+    @FK(Recettes.class)
+    @Col(name = "Id_Recettes")
+    private int Id_Recettes;
+
+    @FK(Ingredients.class)
+    @Col(name = "Id_Ingredients")
     private Ingredients Ingredients;
 
     public int getIdDetailsRecettes() {

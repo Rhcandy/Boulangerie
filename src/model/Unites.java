@@ -1,13 +1,11 @@
 package model;
 
-import org.entityframework.tools.Col;
 import org.entityframework.tools.Primary;
 import org.entityframework.tools.Table;
 
 @Table(name = "Unites")
 public class Unites {
     @Primary(auto = true)
-    @Col(name ="Id_Unite")
     private int Id_Unite;
     private String Nom;
     

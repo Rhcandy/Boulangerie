@@ -1,21 +1,28 @@
 package model;
 
+import javax.persistence.Table;
+
 import org.entityframework.client.GenericEntity;
 import org.entityframework.tools.Col;
+import org.entityframework.tools.FK;
 import org.entityframework.tools.Primary;
 import org.entityframework.tools.RowResult;
 
 import dao.Connector;
 
-
+@Table(name = "Produit")
 public class Produit {
     @Primary(auto = true)
     private int Id_Produit;
     private String Nom;
     private int Duree_conservation;
-    @Col(name = "Id_Recettes",reference = "Id_Recettes")
+
+    @FK(Recettes.class)
+    @Col(name = "Id_Recettes")
     private Recettes Recette; 
-    @Col(name = "Id_Categorie",reference = "Id_Categorie")
+
+    @FK(Categories.class)
+    @Col(name = "Id_Categorie")
     private Categories Categorie;
 
     

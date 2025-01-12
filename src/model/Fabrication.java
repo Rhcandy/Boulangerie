@@ -2,6 +2,7 @@ package model;
 import java.sql.Timestamp;
 
 import org.entityframework.tools.Col;
+import org.entityframework.tools.FK;
 import org.entityframework.tools.Primary;
 import org.entityframework.tools.Table;
 
@@ -24,7 +25,8 @@ public class Fabrication {
     private Timestamp dtExpiration;
     @Col(name = "Cout_fabrication_unitaire")
     private double coutFabricationUnitaire;
-    @Col(name = "Id_Produit",reference = "Id_Produit")
+    @FK(Produit.class)
+    @Col(name = "Id_Produit")
     private Produit Produit;
 
     public int getIdFabrication() {

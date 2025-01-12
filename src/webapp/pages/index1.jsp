@@ -5,6 +5,7 @@
  List<Ingredients> Ingred = (List<Ingredients>) request.getAttribute("Ingredients"); 
  List<Produit> Produits = (List<Produit>) request.getAttribute("Produits");
  List<Fabrication> Fabrications = (List<Fabrication>) request.getAttribute("Fabrications");
+ List<Vente> Ventes = (List<Vente>) request.getAttribute("ventes");
 %>
 
 <!DOCTYPE html>
@@ -17,13 +18,13 @@
   <meta content="" name="description">
   <meta content="" name="keywords">
 
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="<%= request.getContextPath() %>/assets/img/favicon.png" rel="icon">
+  <link href="<%= request.getContextPath() %>/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="<%= request.getContextPath() %>/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="<%= request.getContextPath() %>/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
 
-  <link href="assets/css/main.css" rel="stylesheet">
+  <link href="<%= request.getContextPath() %>/assets/css/main.css" rel="stylesheet">
 </head>
 
 <body>
@@ -98,7 +99,6 @@
                     ingredientNames.add(ingredient.getNom());
                 }
                 String ingredientsStr = String.join(", ", ingredientNames);
-          
         %>
             <tr class="product-item" data-ingredients="<%= ingredientsStr.toLowerCase() %>">
               <td><%=produit.getNom()%></td> <!-- Afficher le nom du produit -->
@@ -135,9 +135,9 @@
             for (Ingredients ingredient : Ingred) {
         %>
             <tr>
-              <td><%=ingredient.getUnite().getNom()%></td>
               <td><%=ingredient.getNom()%></td> 
               <td><%=ingredient.getstock()%></td> 
+              <td><%=ingredient.getUnite().getNom()%></td>
               <td>
                 <button class="btn btn-warning">Modifier</button>
                 <button class="btn btn-danger">Supprimer</button>
@@ -185,25 +185,73 @@
       </table>
     </section>
 
-    <!-- Gestion des Ventes -->
-    <section id="ventes" class="mb-5">
-      <h2>Gestion des Ventes</h2>
+    <!-- Gestion des Détails des Ventes avec Filtre -->
+<section id="ventes" class="mb-5">
+  <h2>Gestion des Details des Ventes</h2>
+   <a href="VenteServlet" >
       <button class="btn btn-primary mb-3">Enregistrer une vente</button>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Produit</th>
-            <th>Quantite</th>
-            <th>Prix Total</th>
-            <th>Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- VENTES -->
-        </tbody>
-      </table>
-    </section>
+    </a>
+  <!-- Formulaire de filtrage -->
+  <form id="filterForm">
+    <label for="natureFilter">Filtrer par Ingredients Nature :</label>
+    <select id="natureFilter" class="form-control">
+      <option value="">-- Selectionner --</option>
+      <option value="true">Ingredients Nature</option>
+      <option value="false">Ingredients Non-Nature</option>
+    </select>
+  </form>
+  
+  <table class="table table-striped" id="ventesTable">
+    <thead>
+      <tr>
+        <th>Id Vente</th>
+        <th>Id Detail Vente</th>
+        <th>Produit</th>
+        <th>Quantite</th>
+        <th>Prix Total</th>
+        <th>Ingredient Nature</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% 
+        for (Vente vente : Ventes) {
+          List<Details_Ventes> detailsVentes = vente.getComposant();
+          for (Details_Ventes detail : detailsVentes) {
+            Ingredients ingredient = null;
+            boolean isNature = true;  // Initialiser comme 'true' (le produit est "nature" par défaut)
+            
+            // Vérifier les ingrédients de la recette du produit
+            if (detail.getIdProduit() != null && detail.getIdProduit().getRecette() != null) {
+              for (Details_Recettes recetteDetail : detail.getIdProduit().getRecette().getComposant()) {
+                ingredient = recetteDetail.getIngredients();
+                if (ingredient != null && ingredient.getIs_Nature()) {
+                  isNature = false;  // Si un ingrédient est de type 'nature', alors le produit est non-nature
+                  break; // Une fois trouvé un ingrédient 'nature', on peut arrêter la recherche
+                }
+              }
+            }
+      %>
+        <tr class="product-item" data-vente-id="<%= detail.getIdVente() %>" data-nature="<%= isNature %>">
+          <td><%= detail.getIdVente() %></td>
+          <td><%= detail.getIdDetailsVentes() %></td>
+          <td><%= detail.getIdProduit() != null ? detail.getIdProduit().getNom() : "Inconnu" %></td>
+          <td><%= detail.getQtt() %></td>
+          <td><%= detail.getIdProduit() != null ? detail.getIdProduit().getprixvente() * detail.getQtt() : 0 %></td>
+          <td><%= isNature ? "Nature" : "Non-Nature" %></td>
+          <td>
+            <button onclick="" class="btn btn-success">Btn</button>
+          </td>
+        </tr>
+      <% 
+          } // Fin du for sur Details_Ventes
+        } // Fin du for sur Ventes
+      %>
+    </tbody>
+  </table>
+</section>
+
+
 
     <!-- Gestion des Fournisseurs -->
     <section id="fournisseurs" class="mb-5">
@@ -341,6 +389,23 @@
           }
         });
       }
+
+
+      // Filtrage en fonction de la sélection de l'utilisateur
+      document.getElementById('natureFilter').addEventListener('change', function() {
+          let filterValue = this.value;  // true / false / "" (vide pour tout afficher)
+          let rows = document.querySelectorAll('#ventesTable tbody tr');
+
+          rows.forEach(row => {
+              let isNature = row.getAttribute('data-nature') === 'true'; // Vérifier si cet ingrédient est nature
+              if (filterValue === "" || (filterValue === "true" && isNature) || (filterValue === "false" && !isNature)) {
+                  row.style.display = '';  // Afficher la ligne
+              } else {
+                  row.style.display = 'none';  // Cacher la ligne
+              }
+          });
+      });
+      
   </script>
 </body>
 

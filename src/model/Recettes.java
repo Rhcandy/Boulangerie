@@ -2,7 +2,6 @@ package model;
 
 import java.util.List;
 
-import org.entityframework.tools.Col;
 import org.entityframework.tools.OneToMany; 
 import org.entityframework.tools.Primary;
 import org.entityframework.tools.Table;
@@ -10,9 +9,9 @@ import org.entityframework.tools.Table;
 @Table(name = "Recettes")
 public class Recettes {
     @Primary(auto = true)
-    @Col(name = "Id_Recettes")
     private int Id_Recettes;
-    @OneToMany(foreignCol = "Id_Recettes",target = Details_Recettes.class)
+
+    @OneToMany(Details_Recettes.class)
     private List<Details_Recettes> composant;
     
 
