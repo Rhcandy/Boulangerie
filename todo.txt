@@ -1,0 +1,81 @@
+    
+
+1. Gestion des produits
+
+[ ] Créer, modifier et supprimer des produits (CRUD).
+
+[ ] Afficher la liste des produits disponibles avec les détails (nom, catégorie, prix, stock).
+
+[ ] Mettre à jour automatiquement le stock des produits après une vente ou fabrication.
+
+[ ] Implémenter une recherche avancée (par catégorie, nom, ou stock faible).
+
+
+---
+
+2. Gestion des ingrédients
+
+[ ] Ajouter, modifier et supprimer des ingrédients.
+
+[ ] Afficher le stock des ingrédients avec unité de mesure.
+
+[ ] Alerter lorsque le stock d'un ingrédient est faible.
+
+[ ] Associer des ingrédients à un fournisseur lors de l'ajout.
+
+---
+
+3. Gestion des fabrications
+
+[ ] Créer un plan de fabrication en sélectionnant un produit et la quantité.
+
+[ ] Déduire automatiquement les quantités d'ingrédients nécessaires lors de la fabrication
+
+---
+
+4. Gestion des ventes
+
+[ ] Créer une interface de point de vente (POS) pour enregistrer les ventes.
+
+[ ] Ajouter des détails de vente avec produits, quantités et prix.
+
+---
+
+5. Gestion des fournisseurs
+
+[ ] Ajouter, modifier et supprimer des fournisseurs.
+
+---
+
+6. Gestion des stocks
+
+[ ] Afficher un tableau de bord des niveaux de stock (produits finis et ingrédients).
+.
+
+[ ] Générer des rapports de consommations d'ingrédients par période.
+
+---
+
+7. Rapports et statistiques
+
+[ ] Générer des rapports financiers (chiffre d'affaires, bénéfices).
+
+[ ] Afficher des statistiques de production (produits les plus fabriqués).
+
+[ ] Lister les produits les plus vendus par catégorie.
+
+---
+
+8. Notifications et alertes
+
+[ ] Configurer des notifications pour :
+
+Stock faible d'ingrédients ou produits.
+
+---
+
+9. Autres fonctionnalités avancées
+
+[ ] Ajouter la gestion des recettes pour associer les ingrédients nécessaires à chaque produit.
+
+---
