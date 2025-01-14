@@ -19,6 +19,7 @@ import model.Categories;
 import model.Fabrication;
 import model.Ingredients;
 import model.Produit;
+import model.Suggestion;
 import model.Vente;
 
 import java.io.IOException;
@@ -35,12 +36,14 @@ public class HomeServlet extends HttpServlet {
              List<Fabrication> Fabrications =service.findWhere(Fabrication.class,"Dt_Expiration > NOW() ");
              List<Categories> categories =service.findAll(Categories.class);
              List<Vente> ventes = service.findAll(Vente.class);
+             List<Suggestion> suggestion =service.findWhere(Suggestion.class,"Date_fin >= NOW() ");
 
              request.setAttribute("Produits", Produits);
              request.setAttribute("Ingredients", Ingredients);
              request.setAttribute("Fabrications", Fabrications);
              request.setAttribute("categories", categories);
              request.setAttribute("ventes", ventes);
+             request.setAttribute("suggestion", suggestion);
 
 
         } catch (Exception e) {
