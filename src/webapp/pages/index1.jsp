@@ -190,11 +190,21 @@
   <h2>Gestion des Details des Ventes</h2>
    <a href="VenteServlet" >
       <button class="btn btn-primary mb-3">Enregistrer une vente</button>
-    </a>
-  <!-- Formulaire de filtrage -->
+  </a>
+  
   <form id="filterForm">
+   <select id="catVente" class="form-select w-25">
+          <option value="all">Toutes les categories</option>
+          <%
+            for (Categories cat : Categs) {
+          %>
+          <option value="<%=cat.getNom()%>"><%=cat.getNom()%></option>
+         <% } %>
+    </select>
+      
+    </select>
     <label for="natureFilter">Filtrer par Ingredients Nature :</label>
-    <select id="natureFilter" class="form-control">
+    <select id="natureFilter" class="form-select w-25">
       <option value="">-- Selectionner --</option>
       <option value="true">Ingredients Nature</option>
       <option value="false">Ingredients Non-Nature</option>
@@ -232,17 +242,21 @@
               }
             }
       %>
-        <tr class="product-item" data-vente-id="<%= detail.getIdVente() %>" data-nature="<%= isNature %>">
-          <td><%= detail.getIdVente() %></td>
-          <td><%= detail.getIdDetailsVentes() %></td>
-          <td><%= detail.getIdProduit() != null ? detail.getIdProduit().getNom() : "Inconnu" %></td>
-          <td><%= detail.getQtt() %></td>
-          <td><%= detail.getIdProduit() != null ? detail.getIdProduit().getprixvente() * detail.getQtt() : 0 %></td>
-          <td><%= isNature ? "Nature" : "Non-Nature" %></td>
-          <td>
-            <button onclick="" class="btn btn-success">Btn</button>
-          </td>
+        <tr class="product-item" 
+            data-vente-id="<%= detail.getIdVente() %>" 
+            data-nature="<%= isNature %>" 
+            data-category="<%= detail.getIdProduit() != null && detail.getIdProduit().getCategorie() != null ? detail.getIdProduit().getCategorie().getNom() : "Inconnu" %>">
+            <td><%= detail.getIdVente() %></td>
+            <td><%= detail.getIdDetailsVentes() %></td>
+            <td><%= detail.getIdProduit() != null ? detail.getIdProduit().getNom() : "Inconnu" %></td>
+            <td><%= detail.getQtt() %></td>
+            <td><%= detail.getIdProduit() != null ? detail.getIdProduit().getprixvente() * detail.getQtt() : 0 %></td>
+            <td><%= isNature ? "Nature" : "Non-Nature" %></td>
+            <td>
+                <button onclick="" class="btn btn-success">Btn</button>
+            </td>
         </tr>
+
       <% 
           } // Fin du for sur Details_Ventes
         } // Fin du for sur Ventes
@@ -431,20 +445,34 @@
       }
 
 
-      // Filtrage en fonction de la sélection de l'utilisateur
-      document.getElementById('natureFilter').addEventListener('change', function() {
-          let filterValue = this.value;  // true / false / "" (vide pour tout afficher)
+     // Filtrage par nature
+      document.getElementById('natureFilter').addEventListener('change', filterTable);
+
+      // Filtrage par catégorie
+      document.getElementById('catVente').addEventListener('change', filterTable);
+
+      function filterTable() {
+          let natureValue = document.getElementById('natureFilter').value; // true / false / "" (vide pour tout afficher)
+          let categoryValue = document.getElementById('catVente').value; // Nom de catégorie ou "all" pour tout afficher
+
           let rows = document.querySelectorAll('#ventesTable tbody tr');
 
           rows.forEach(row => {
               let isNature = row.getAttribute('data-nature') === 'true'; // Vérifier si cet ingrédient est nature
-              if (filterValue === "" || (filterValue === "true" && isNature) || (filterValue === "false" && !isNature)) {
-                  row.style.display = '';  // Afficher la ligne
+              let rowCategory = row.getAttribute('data-category'); // Catégorie du produit dans cette ligne
+
+              // Vérifier si la ligne doit être affichée selon les filtres
+              let matchesNature = natureValue === "" || (natureValue === "true" && isNature) || (natureValue === "false" && !isNature);
+              let matchesCategory = categoryValue === "all" || rowCategory === categoryValue;
+
+              if (matchesNature && matchesCategory) {
+                  row.style.display = ''; // Afficher la ligne
               } else {
-                  row.style.display = 'none';  // Cacher la ligne
+                  row.style.display = 'none'; // Cacher la ligne
               }
           });
-      });
+      }
+
       
   </script>
 </body>
