@@ -1,0 +1,69 @@
+<project name="Boulangerie" default="build-war" basedir=".">
+
+    <!-- Déclaration des répertoires -->
+    <property name="src.dir" value="src"/>
+    <property name="web.dir" value="src/webapp"/>
+    <property name="build.dir" value="build"/>
+    <property name="dist.dir" value="dist"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="war.name" value="Boulangerie"/>
+    <property name="wildfly.deploy.dir" value="F:\serveur\wildfly-26.1.2.Final\standalone\deployments"/>
+
+    <!-- Nettoyage des répertoires de compilation et de distribution -->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+        <delete dir="${web.dir}/WEB-INF/classes"/>
+    </target>
+
+    <!-- Création des répertoires de compilation et de distribution -->
+    <target name="prepare">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+        <mkdir dir="${web.dir}/WEB-INF/classes"/>
+    </target>
+
+    <!-- Compilation des fichiers Java -->
+    <target name="compile" depends="prepare">
+        <javac srcdir="${src.dir}" destdir="${build.dir}">
+            <classpath>
+                <fileset dir="${lib.dir}">
+                    <include name="/*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+        
+        <!-- Copier les fichiers compilés dans WEB-INF/classes -->
+        <copy todir="${web.dir}/WEB-INF/classes">
+            <fileset dir="${build.dir}">
+                <include name="**/*.class"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- Création de l'archive .war et déploiement -->
+    <target name="build-war" depends="compile">
+        <!-- Crée le fichier WAR et inclut les fichiers compilés et le module web -->
+        <war destfile="${dist.dir}/${war.name}.war" webxml="${web.dir}/WEB-INF/web.xml">
+            <!-- Inclure les classes compilées -->
+            <fileset dir="${build.dir}">
+                <include name="/*.class"/>
+            </fileset>
+
+            <!-- Inclure le contenu du répertoire webapp, excluant WEB-INF -->
+            <fileset dir="${web.dir}">
+                <exclude name="WEB-INF/"/>
+            </fileset>
+
+            <!-- Inclure tout le contenu de WEB-INF -->
+            <webinf dir="${web.dir}/WEB-INF">
+                <include name="**/*"/>
+            </webinf>
+        </war>
+
+        <!-- Déploiement du fichier WAR dans WildFly -->
+        <echo message="Déploiement du fichier WAR dans WildFly"/>
+        <copy file="${dist.dir}/${war.name}.war" todir="${wildfly.deploy.dir}"/>
+    </target>
+
+</project>
