@@ -1,11 +1,12 @@
 <%@ page import="model.*" %>
 <%@ page import="java.util.*" %>
 <%
- List<Categories> Categs = (List<Categories>) request.getAttribute("categories");
- List<Ingredients> Ingred = (List<Ingredients>) request.getAttribute("Ingredients"); 
- List<Produit> Produits = (List<Produit>) request.getAttribute("Produits");
- List<Fabrication> Fabrications = (List<Fabrication>) request.getAttribute("Fabrications");
- List<Vente> Ventes = (List<Vente>) request.getAttribute("ventes");
+    List<Categories> Categs = (List<Categories>) request.getAttribute("categories");
+    List<Ingredients> Ingred = (List<Ingredients>) request.getAttribute("Ingredients"); 
+    List<Produit> Produits = (List<Produit>) request.getAttribute("Produits");
+    List<Fabrication> Fabrications = (List<Fabrication>) request.getAttribute("Fabrications");
+    List<Vente> Ventes = (List<Vente>) request.getAttribute("ventes");
+    List<Suggestion> suggestion = (List<Suggestion>) request.getAttribute("suggestion");
 %>
 
 <!DOCTYPE html>
@@ -52,68 +53,109 @@
   <!-- Contenu principal -->
   <main class="container mt-5">
 
+  
       <!-- Gestion des Produits -->
     <section id="produits" class="mb-5">
-      <h2>Gestion des Produits</h2>
-      <div class="d-flex justify-content-between mb-3">
+
+    <!-- Suggestion-->
+    <h2>Suggestion</h2>
+    <div class="d-flex justify-content-between mb-3">
+        <input type="date" id="dateDebFilter" class="form-control w-25" placeholder="Date de début">
+        <input type="date" id="dateFinFilter" class="form-control w-25" placeholder="Date de fin">
+        <select id="categorySuggestionFilter" class="form-select w-25">
+            <option value="all">Toutes les categories</option>
+            <%
+                for (Categories cat : Categs) {
+            %>
+            <option value="<%=cat.getNom()%>"><%=cat.getNom()%></option>
+            <% } %>
+        </select>
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Produit</th>
+                <th>Date debut</th>
+                <th>Date fin</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody id="suggestionTableBody">
+            <%
+                for (Suggestion sug : suggestion) {
+            %>
+            <tr class="suggestion-item" 
+                data-category="<%=sug.getId_Produit().getCategorie().getNom()%>" 
+                data-datedeb="<%=sug.getDate_deb()%>" 
+                data-datefin="<%=sug.getDate_fin()%>">
+                <td><%=sug.getId_Produit().getNom()%></td>
+                <td><%=sug.getDate_deb()%></td>
+                <td><%=sug.getDate_fin()%></td>
+                <td><%=sug.getDescri()%></td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+
+    <h2>Gestion des Produits</h2>
+    <div class="d-flex justify-content-between mb-3">
         <button class="btn btn-success">Ajouter un produit</button>
-      </div>
-       <div class="d-flex justify-content-between mb-3">
+    </div>
+    <div class="d-flex justify-content-between mb-3">
         <input type="text" id="searchInput" class="form-control w-50" placeholder="Rechercher un produit...">
         <select id="categoryFilter" class="form-select w-25">
-          <option value="all">Toutes les categories</option>
-          <%
-            for (Categories cat : Categs) {
-          %>
-          <option value="<%=cat.getNom()%>"><%=cat.getNom()%></option>
-         <% } %>
+            <option value="all">Toutes les catégories</option>
+            <%
+                for (Categories cat : Categs) {
+            %>
+            <option value="<%=cat.getNom()%>"><%=cat.getNom()%></option>
+            <% } %>
         </select>
-
         <select id="ingredientFilter" class="form-select w-25">
-          <option value="all">Tous les ingredients</option>
-          <%
-           for (Ingredients ingredient : Ingred) {
-          %>
-          <option value="<%=ingredient.getNom()%>"><%=ingredient.getNom()%></option>
-         <% } %>
+            <option value="all">Tous les ingrédients</option>
+            <%
+                for (Ingredients ingredient : Ingred) {
+            %>
+            <option value="<%=ingredient.getNom()%>"><%=ingredient.getNom()%></option>
+            <% } %>
         </select>
-      </div>
+    </div>
 
-      <table class="table table-striped">
+    <table class="table table-striped">
         <thead>
-          <tr>
-            <th>Nom</th>
-            <th>Categorie</th>
-            <th>Stock</th>
-            <th>Prix de vente </th>
-            <th>Actions</th>
-          </tr>
+            <tr>
+                <th>Nom</th>
+                <th>Catégorie</th>
+                <th>Stock</th>
+                <th>Prix de vente</th>
+                <th>Actions</th>
+            </tr>
         </thead>
         <tbody>
-        <%
-            for (Produit produit : Produits) {
-               List<Details_Recettes> detailsRecettes = produit.getRecette().getComposant();
-                List<String> ingredientNames = new ArrayList<>();
-                for (Details_Recettes detail : detailsRecettes) {
-                    Ingredients ingredient = detail.getIngredients();
-                    ingredientNames.add(ingredient.getNom());
-                }
-                String ingredientsStr = String.join(", ", ingredientNames);
-        %>
+            <%
+                for (Produit produit : Produits) {
+                    List<Details_Recettes> detailsRecettes = produit.getRecette().getComposant();
+                    List<String> ingredientNames = new ArrayList<>();
+                    for (Details_Recettes detail : detailsRecettes) {
+                        Ingredients ingredient = detail.getIngredients();
+                        ingredientNames.add(ingredient.getNom());
+                    }
+                    String ingredientsStr = String.join(", ", ingredientNames);
+            %>
             <tr class="product-item" data-ingredients="<%= ingredientsStr.toLowerCase() %>">
-              <td><%=produit.getNom()%></td> <!-- Afficher le nom du produit -->
-              <td><%=produit.getCategorie().getNom()%></td> <!-- Afficher la catégorie du produit -->
-              <td><%=produit.getstock()%></td> <!-- Afficher le stock du produit -->
-              <td><%=produit.getprixvente()%></td> <!-- Afficher le prix de vente du produit -->
-              <td>
-                <button class="btn btn-warning">Modifier</button>
-                <button class="btn btn-danger">Supprimer</button>
-              </td>
+                <td><%=produit.getNom()%></td>
+                <td><%=produit.getCategorie().getNom()%></td>
+                <td><%=produit.getstock()%></td>
+                <td><%=produit.getprixvente()%></td>
+                <td>
+                    <button class="btn btn-warning">Modifier</button>
+                    <button class="btn btn-danger">Supprimer</button>
+                </td>
             </tr>
-          <% } %>
+            <% } %>
         </tbody>
-      </table>
-    </section>
+    </table>
+</section>
 <!-- Gestion des Ingredients -->
     <section id="ingredients" class="mb-5">
       <h2>Gestion des Ingredients</h2>
@@ -472,6 +514,35 @@
               }
           });
       }
+
+    // filtre suggestion
+    document.getElementById('dateDebFilter').addEventListener('change', applySuggestionFilters);
+    document.getElementById('dateFinFilter').addEventListener('change', applySuggestionFilters);
+    document.getElementById('categorySuggestionFilter').addEventListener('change', applySuggestionFilters);
+
+    function applySuggestionFilters() {
+        const dateDebFilter = document.getElementById('dateDebFilter').value;
+        const dateFinFilter = document.getElementById('dateFinFilter').value;
+        const categoryFilter = document.getElementById('categorySuggestionFilter').value.toLowerCase();
+
+        const rows = document.querySelectorAll('#suggestionTableBody .suggestion-item');
+
+        rows.forEach(row => {
+            const category = row.getAttribute('data-category').toLowerCase();
+            const dateDeb = row.getAttribute('data-datedeb');
+            const dateFin = row.getAttribute('data-datefin');
+
+            const matchesDateDeb = !dateDebFilter || new Date(dateDeb) >= new Date(dateDebFilter);
+            const matchesDateFin = !dateFinFilter || new Date(dateFin) <= new Date(dateFinFilter);
+            const matchesCategory = categoryFilter === 'all' || category.includes(categoryFilter);
+
+            if (matchesDateDeb && matchesDateFin && matchesCategory) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
 
       
   </script>
