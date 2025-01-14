@@ -139,7 +139,7 @@
               <td><%=ingredient.getstock()%></td> 
               <td><%=ingredient.getUnite().getNom()%></td>
               <td>
-                <button class="btn btn-warning">Modifier</button>
+                <button class="btn btn-warning"data-bs-toggle="modal" data-bs-target="#achatModal" data-id="<%=ingredient.getIdIngredients()%>">Ajouter</button>
                 <button class="btn btn-danger">Supprimer</button>
               </td>
             </tr>
@@ -337,6 +337,39 @@
   </div>
   </div>
 
+  <%-- Modal pour achat  --%>
+  <div class="modal fade" id="achatModal" tabindex="-1" aria-labelledby="achatModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="achatModalLabel">Acheter un ingrédient</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="AchatServelet" method="POST">
+                    <div class="modal-body">
+                        <input type="hidden" name="ingredients" id="ingredientsId">
+                        <div class="mb-3">
+                            <label for="qtt" class="form-label">Quantite</label>
+                            <input type="number" class="form-control" id="qtt" name="qtt" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="prix" class="form-label">Prix</label>
+                            <input type="number" class="form-control" id="prix" name="prix" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="date" class="form-label">Date d'expiration</label>
+                            <input type="date" class="form-control" id="date" name="date" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Acheter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
   </main>
 
   <!-- Footer -->
@@ -347,6 +380,13 @@
   <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script>
+       // Ajout dynamique de l'ID d'ingrédient au formulaire dans le modal
+      document.getElementById('achatModal').addEventListener('show.bs.modal', function (event) {
+          const button = event.relatedTarget; // Bouton qui a déclenché le modal
+          const ingredientsId = button.getAttribute('data-id'); // Récupération de l'ID
+          const modalInput = document.getElementById('ingredientsId'); 
+          modalInput.value = ingredientsId; // Ajout de l'ID dans le champ caché
+      });
       // Gestion du filtre par catégorie
       document.getElementById('categoryFilter').addEventListener('change', function () {
         const selectedCategory = this.value.toLowerCase();
