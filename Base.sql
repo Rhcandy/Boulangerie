@@ -322,3 +322,25 @@ INSERT INTO Achats (qtt_initiale, qtt_reste, Prix_Unitaire, date_expiration, Id_
 
 INSERT INTO Fabrication_ (qtt_initiale, Dt_Fabrique, Id_Produit)
 VALUES (50, NOW(),1);
+
+CREATE table Suggestion(
+    Id_Suggestion serial PRIMARY KEY,
+    Id_Produit INTEGER,
+    Date_deb TIMESTAMP,
+    Date_fin TIMESTAMP,
+    Descri TEXT,
+    FOREIGN KEY (Id_Produit) REFERENCES Produit(Id_Produit)
+);
+
+-- Insertion des suggestions
+-- Insertion des suggestions sans accents
+INSERT INTO Suggestion (Id_Produit, Date_deb, Date_fin, Descri) VALUES
+(1, '2025-01-15 08:00:00', '2025-01-20 20:00:00', 'Promotion speciale : Achetez 2 baguettes et recevez une troisieme gratuite !'),
+(2, '2025-01-18 09:00:00', '2025-01-25 18:00:00', 'Essayez nos croissants au beurre, parfaits pour un petit-dejeuner savoureux !'),
+(3, '2025-02-01 10:00:00', '2025-02-14 20:00:00', 'Offre Saint-Valentin : Une tarte au chocolat achetee, la deuxieme a moitie prix !'),
+(4, '2025-01-12 11:00:00', '2025-01-19 15:00:00', 'Dejeuner express : Sandwich jambon-fromage a prix reduit pour accompagner votre pause dejeuner.'),
+(1, '2025-01-22 08:00:00', '2025-01-30 20:00:00', 'Fete du pain : Offres speciales sur toutes les baguettes !'),
+(3, '2025-02-20 10:00:00', '2025-02-28 20:00:00', 'Decouvrez notre tarte au chocolat avec une touche de noisette pour un plaisir gourmand.');
+
+
+
