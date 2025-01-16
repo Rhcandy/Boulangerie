@@ -1,5 +1,6 @@
 <%@ page import="model.*" %>
 <%@ page import="java.util.*" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 <%
     List<Categories> Categs = (List<Categories>) request.getAttribute("categories");
     List<Ingredients> Ingred = (List<Ingredients>) request.getAttribute("Ingredients"); 
@@ -7,6 +8,8 @@
     List<Fabrication> Fabrications = (List<Fabrication>) request.getAttribute("Fabrications");
     List<Vente> Ventes = (List<Vente>) request.getAttribute("ventes");
     List<Suggestion> suggestion = (List<Suggestion>) request.getAttribute("suggestion");
+
+    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 %>
 
 <!DOCTYPE html>
@@ -65,6 +68,11 @@
         <input type="date" id="dateDebFilter" class="form-control w-25" placeholder="Date de début">
         <Strong><label>Date fin</label></Strong>
         <input type="date" id="dateFinFilter" class="form-control w-25" placeholder="Date de fin">
+        <strong><label for="yearFilter">Annee:</label></strong>
+        <input type="number" id="yearFilter" class="form-control w-auto" placeholder="Année" oninput="applySuggestionFilters()">
+   
+
+
         <select id="categorySuggestionFilter" class="form-select w-25">
             <option value="all">Toutes les categories</option>
             <%
@@ -92,8 +100,8 @@
                 data-datedeb="<%=sug.getDate_deb()%>" 
                 data-datefin="<%=sug.getDate_fin()%>">
                 <td><%=sug.getId_Produit().getNom()%></td>
-                <td><%=sug.getDate_deb()%></td>
-                <td><%=sug.getDate_fin()%></td>
+                <td><%=formatter.format(sug.getDate_deb())%></td>
+                <td><%=formatter.format(sug.getDate_fin())%></td>
                 <td><%=sug.getDescri()%></td>
             </tr>
             <% } %>
@@ -107,7 +115,7 @@
     <div class="d-flex justify-content-between mb-3">
         <input type="text" id="searchInput" class="form-control w-50" placeholder="Rechercher un produit...">
         <select id="categoryFilter" class="form-select w-25">
-            <option value="all">Toutes les catégories</option>
+            <option value="all">Toutes les categories</option>
             <%
                 for (Categories cat : Categs) {
             %>
@@ -115,7 +123,7 @@
             <% } %>
         </select>
         <select id="ingredientFilter" class="form-select w-25">
-            <option value="all">Tous les ingrédients</option>
+            <option value="all">Tous les ingredients</option>
             <%
                 for (Ingredients ingredient : Ingred) {
             %>
@@ -561,28 +569,32 @@
     document.getElementById('categorySuggestionFilter').addEventListener('change', applySuggestionFilters);
 
     function applySuggestionFilters() {
-        const dateDebFilter = document.getElementById('dateDebFilter').value;
-        const dateFinFilter = document.getElementById('dateFinFilter').value;
-        const categoryFilter = document.getElementById('categorySuggestionFilter').value.toLowerCase();
+      const dateDebFilter = document.getElementById('dateDebFilter').value;
+      const dateFinFilter = document.getElementById('dateFinFilter').value;
+      const categoryFilter = document.getElementById('categorySuggestionFilter').value.toLowerCase();
+      const yearFilter = document.getElementById('yearFilter').value; // Nouvelle entrée pour l'année
 
-        const rows = document.querySelectorAll('#suggestionTableBody .suggestion-item');
+      const rows = document.querySelectorAll('#suggestionTableBody .suggestion-item');
 
-        rows.forEach(row => {
-            const category = row.getAttribute('data-category').toLowerCase();
-            const dateDeb = row.getAttribute('data-datedeb');
-            const dateFin = row.getAttribute('data-datefin');
+      rows.forEach(row => {
+          const category = row.getAttribute('data-category').toLowerCase();
+          const dateDeb = row.getAttribute('data-datedeb');
+          const dateFin = row.getAttribute('data-datefin');
+          const dateDebYear = new Date(dateDeb).getFullYear(); // Année de la date de début
 
-            const matchesDateDeb = !dateDebFilter || new Date(dateDeb) >= new Date(dateDebFilter);
-            const matchesDateFin = !dateFinFilter || new Date(dateFin) <= new Date(dateFinFilter);
-            const matchesCategory = categoryFilter === 'all' || category.includes(categoryFilter);
+          const matchesDateDeb = !dateDebFilter || new Date(dateDeb) >= new Date(dateDebFilter);
+          const matchesDateFin = !dateFinFilter || new Date(dateFin) <= new Date(dateFinFilter);
+          const matchesCategory = categoryFilter === 'all' || category.includes(categoryFilter);
+          const matchesYear = !yearFilter || dateDebYear === parseInt(yearFilter, 10); // Vérifie si l'année correspond
 
-            if (matchesDateDeb && matchesDateFin && matchesCategory) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    }
+          if (matchesDateDeb && matchesDateFin && matchesCategory && matchesYear) {
+              row.style.display = '';
+          } else {
+              row.style.display = 'none';
+          }
+      });
+}
+
 
       
   </script>

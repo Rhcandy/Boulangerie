@@ -1,7 +1,9 @@
 <%@ page import="model.*" %>
 <%@ page import="java.util.*" %>
 <%
- List<Produit> Produits = (List<Produit>) request.getAttribute("Produits");
+   List<Produit> Produits = (List<Produit>) request.getAttribute("Produits");
+   List<Clients> Clients = (List<Clients>) request.getAttribute("Clients");
+
 %>
 
 <!DOCTYPE html>
@@ -115,6 +117,19 @@
     <div class="container">
         <h2 class="form-title text-center">Enregistrer Vente</h2>
         <form action="VenteServlet" method="POST">
+            <div>
+              <div class="col-md-4">
+                <select name="Clientid" class="form-control"  required>
+                    <% if (Clients != null && !Clients.isEmpty()) { %>
+                        <% for (Clients Client : Clients) { %>
+                            <option value="<%=Client.getId_Client()%>">
+                                <%= Client.getNom()%> 
+                            </option>
+                        <% } %>
+                    <% } %>
+                </select>
+              </div>
+           </div>
             <div>
                 <div id="panierContainer"></div>
                 <button type="button" class="btn btn-secondary mb-3" onclick="addCreanceField()">Ajouter un produit</button>

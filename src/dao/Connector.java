@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 public class Connector {
     public static Connection getConnection() throws SQLException, ClassNotFoundException {
-        return Driver.getPGConnection("postgres", "ando", "boulangerie");
+        return Driver.getPGConnection("postgres", "2905helena", "boulangerie");
     }
 
 }
