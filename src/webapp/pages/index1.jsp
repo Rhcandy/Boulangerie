@@ -59,8 +59,11 @@
 
     <!-- Suggestion-->
     <h2>Suggestion</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSuggestionModal">Ajouter une suggestion</button>
     <div class="d-flex justify-content-between mb-3">
+        <Strong><label>Date de debut</label></Strong>
         <input type="date" id="dateDebFilter" class="form-control w-25" placeholder="Date de début">
+        <Strong><label>Date fin</label></Strong>
         <input type="date" id="dateFinFilter" class="form-control w-25" placeholder="Date de fin">
         <select id="categorySuggestionFilter" class="form-select w-25">
             <option value="all">Toutes les categories</option>
@@ -125,7 +128,7 @@
         <thead>
             <tr>
                 <th>Nom</th>
-                <th>Catégorie</th>
+                <th>Categorie</th>
                 <th>Stock</th>
                 <th>Prix de vente</th>
                 <th>Actions</th>
@@ -425,6 +428,43 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal pour Ajouter une Suggestion -->
+<div class="modal fade" id="addSuggestionModal" tabindex="-1" aria-labelledby="addSuggestionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="SuggestionServelet" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addSuggestionModalLabel">Ajouter une Suggestion</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="produit" class="form-label">Produit</label>
+            <select id="produit" name="produit" class="form-select" required>
+              <option value="">Selectionnez un produit</option>
+              <% for (Produit produit : Produits) { %>
+              <option value="<%= produit.getId_Produit() %>"><%= produit.getNom() %></option>
+              <% } %>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="date" class="form-label">Date de fin</label>
+            <input type="date" id="date" name="date" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="descri" class="form-label">Description</label>
+            <textarea id="descri" name="descri" class="form-control" rows="3" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
   </main>
 
