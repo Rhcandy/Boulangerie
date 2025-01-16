@@ -1,0 +1,39 @@
+<!-- Bouton Ajouter une Suggestion -->
+<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSuggestionModal">Ajouter une suggestion</button>
+
+<!-- Modal pour Ajouter une Suggestion -->
+<div class="modal fade" id="addSuggestionModal" tabindex="-1" aria-labelledby="addSuggestionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="SuggestionServelet" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addSuggestionModalLabel">Ajouter une Suggestion</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="produit" class="form-label">Produit</label>
+            <select id="produit" name="produit" class="form-select" required>
+              <option value="">Sélectionnez un produit</option>
+              <% for (Produit produit : Produits) { %>
+              <option value="<%= produit.getId() %>"><%= produit.getNom() %></option>
+              <% } %>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="date" class="form-label">Date de fin</label>
+            <input type="date" id="date" name="date" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="descri" class="form-label">Description</label>
+            <textarea id="descri" name="descri" class="form-control" rows="3" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
