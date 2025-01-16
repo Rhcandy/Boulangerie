@@ -23,14 +23,17 @@ public class VenteServelet extends HttpServlet  {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         try( GenericEntity service=new GenericEntity(Connector.getConnection());) {
-             List<Produit> Produits =service.findAll(Produit.class);
-             List<Produit> ProdMisy=new ArrayList<Produit>();
+            List<Produit> Produits =service.findAll(Produit.class);
+            List<Produit> ProdMisy=new ArrayList<Produit>();
              for (Produit produit : Produits) {
                 if (produit.getstock() > 0) {
                     ProdMisy.add(produit);
                 }
              }
+            List<Produit> Clients =service.findAll(Clients.class);
+
              request.setAttribute("Produits", ProdMisy);
+             request.setAttribute("Clients", Clients);
         } catch (Exception e) {
            System.out.println(e.getMessage());
         }
@@ -43,12 +46,15 @@ public class VenteServelet extends HttpServlet  {
         try (GenericEntity service=new GenericEntity(Connector.getConnection())){ 
              
             Vente vente = new Vente();
+            
             vente.setTotal(Double.parseDouble(request.getParameter("total")));
             vente.setDateVente(new java.sql.Timestamp(System.currentTimeMillis()));
           
             String[] produitId = request.getParameterValues("ProduitsId[]");
             String[] produitcount = request.getParameterValues("ProduitsQtt[]");
            /*  String[] produitsPrix = request.getParameterValues("ProduitsPrix[]"); */
+
+            Client client=service.findById(Integer.parseInt(request.getParameterValues("Clientid")), Client.class)
 
             List<Details_Ventes> details = new  ArrayList<Details_Ventes>();
                 for (int i = 0; i < produitId.length; i++) {
@@ -59,6 +65,7 @@ public class VenteServelet extends HttpServlet  {
                      details.add(stl);
                 }
             vente.setComposant(details);
+            vente.setClient(client);
 
             service.beginTransaction();
             service.deepSave(vente);
