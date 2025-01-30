@@ -1,0 +1,423 @@
+package model;
+
+import javax.persistence.Table;
+
+import org.entityframework.client.GenericEntity;
+import org.entityframework.tools.Col;
+import org.entityframework.tools.FK;
+import org.entityframework.tools.Primary;
+import org.entityframework.tools.RowResult;
+
+import dao.Connector;
+
+@Table(name = "Produit")
+public class Produit {
+    @Primary(auto = true)
+    private int Id_Produit;
+    private String Nom;
+    private int Duree_conservation;
+
+    @FK(Recettes.class)
+    @Col(name = "Id_Recettes")
+    private Recettes Recette; 
+
+    @FK(Categories.class)
+    @Col(name = "Id_Categorie")
+    private Categories Categorie;
+
+    
+   
+   
+    public int getId_Produit() {
+        return Id_Produit;
+    }
+    public void setId_Produit(int id_Produit) {
+        Id_Produit = id_Produit;
+    }
+    public String getNom() {
+        return Nom;
+    }
+    public void setNom(String nom) {
+        Nom = nom;
+    }
+    public int getDuree_conservation() {
+        return Duree_conservation;
+    }
+    public void setDuree_conservation(int duree_conservation) {
+        Duree_conservation = duree_conservation;
+    }
+     public Recettes getRecette() {
+        return Recette;
+    }
+    public void setRecette(Recettes recette) {
+        Recette = recette;
+    } 
+    public Categories getCategorie() {
+        return Categorie;
+    }
+    public void setCategorie(Categories categorie) {
+        Categorie = categorie;
+    }
+    
+    public  double getstock(){
+        double result=0;
+        try(GenericEntity service=new GenericEntity(Connector.getConnection());) {
+          RowResult resul=service.execute("SELECT qtt_reste_totale FROM vue_qtt_reste_totale where Id_Produit = ?",this.getId_Produit());
+          if (resul.next()) { 
+            return resul.getDouble("qtt_reste_totale");
+          } // Supposons que RowResult a une méthode pour obtenir le ResultSet
+        } catch (Exception e) {
+           System.out.println(e.getMessage());
+        }
+        return result;
+    }
+
+    public  double getprixvente(){
+        double result=0;
+        try(GenericEntity service=new GenericEntity(Connector.getConnection());) {
+          RowResult resul=service.execute("SELECT prix_vente FROM vue_prix_vente where Id_Produit = ?",this.getId_Produit());
+            if (resul.next()) {
+                return resul.getDouble("prix_vente"); // Supposons que RowResult a une méthode pour obtenir le ResultSet
+            }
+        } catch (Exception e) {
+           System.out.println(e.getMessage());
+        }
+        return result;
+    } 
+
+    
+
+}
+
+package model;
+
+import org.entityframework.tools.Table;
+import org.entityframework.tools.Primary;
+
+@Table(name = "Categories")
+public class Categories {
+    @Primary(auto = true)
+    private int Id_Categorie;
+    private String Nom;
+    
+    public int getIdCategorie() {
+        return Id_Categorie;
+    }
+    public void setIdCategorie(int idCategorie) {
+        this.Id_Categorie = idCategorie;
+    }
+    public String getNom() {
+        return Nom;
+    }
+    public void setNom(String nom) {
+        this.Nom = nom;
+    }
+}
+
+
+package model;
+
+import java.util.List;
+
+import org.entityframework.tools.OneToMany; 
+import org.entityframework.tools.Primary;
+import org.entityframework.tools.Table;
+
+@Table(name = "Recettes")
+public class Recettes {
+    @Primary(auto = true)
+    private int Id_Recettes;
+
+    @OneToMany(Details_Recettes.class)
+    private List<Details_Recettes> composant;
+    
+
+    public List<Details_Recettes> getComposant() {
+        return composant;
+    }
+    public void setComposant(List<Details_Recettes> composant) {
+        this.composant = composant;
+    }
+    public int getIdRecettes() {
+        return Id_Recettes;
+    }
+    public void setIdRecettes(int idRecettes) {
+        this.Id_Recettes = idRecettes;
+    }
+    
+
+}
+
+
+package model;
+
+
+import org.entityframework.tools.Col;
+import org.entityframework.tools.FK;
+import org.entityframework.tools.Primary;
+import org.entityframework.tools.Table;
+
+@Table(name = "Details_Recettes")
+public class Details_Recettes {
+    @Primary(auto = true)
+    private int Id_Details_Recettes;
+    private double qtt;
+
+    @FK(Recettes.class)
+    @Col(name = "Id_Recettes")
+    private int Id_Recettes;
+
+    @FK(Ingredients.class)
+    @Col(name = "Id_Ingredients")
+    private Ingredients Ingredients;
+
+    public int getIdDetailsRecettes() {
+        return Id_Details_Recettes;
+    }
+
+    public void setIdDetailsRecettes(int idDetailsRecettes) {
+        this.Id_Details_Recettes = idDetailsRecettes;
+    }
+
+    public double getQtt() {
+        return qtt;
+    }
+
+    public void setQtt(double qtt) {
+        this.qtt = qtt;
+    }
+
+
+    public Ingredients getIngredients() {
+        return Ingredients;
+    }
+
+    public void setIngredients(Ingredients ingredients) {
+        Ingredients = ingredients;
+    }
+}
+
+
+package model;
+
+import org.entityframework.client.GenericEntity;
+import org.entityframework.tools.Primary;
+import org.entityframework.tools.Col;
+import org.entityframework.tools.FK;
+import org.entityframework.tools.RowResult;
+import org.entityframework.tools.Table;
+
+import dao.Connector;
+
+@Table(name = "Ingredients")
+public class Ingredients {
+    @Primary(auto = true)
+    private int Id_Ingredients;
+    private String Nom;
+
+    @FK(Unites.class)
+    @Col(name = "Id_Unite")
+    private Unites Unite;
+    private boolean Is_Nature ;
+
+    public int getIdIngredients() {
+        return Id_Ingredients;
+    }
+    public void setIdIngredients(int idIngredients) {
+        this.Id_Ingredients = idIngredients;
+    }
+    public String getNom() {
+        return Nom;
+    }
+    public void setNom(String nom) {
+        this.Nom = nom;
+    }
+
+    public boolean getIs_Nature(){
+        return Is_Nature;
+    }
+
+    public void setIs_Nature(boolean nature)
+    {
+        this.Is_Nature = nature;
+    }
+
+    public Unites getUnite() {
+        return Unite;
+    }
+    public void setUnite(Unites unite) {
+        Unite = unite;
+    }
+    public  double getstock(){
+        double result=0;
+        try(GenericEntity service=new GenericEntity(Connector.getConnection());) {
+          RowResult resul=service.execute("SELECT qtt_reste_totale FROM vue_qtt_reste_stock_Ingredient where Id_Ingredients = ?",this.getIdIngredients());
+          if (resul.next()) { 
+            return resul.getDouble("qtt_reste_totale"); // Supposons que RowResult a une méthode pour obtenir le ResultSet
+          }
+        } catch (Exception e) {
+           System.out.println(e.getMessage());
+        }
+        return result;
+    }
+
+}
+
+
+package model;
+
+import java.sql.Timestamp;
+import java.util.List;
+
+import org.entityframework.tools.Col;
+import org.entityframework.tools.FK;
+import org.entityframework.tools.OneToMany;
+import org.entityframework.tools.Primary;
+import org.entityframework.tools.Table;
+
+@Table(name = "Vente")
+public class Vente {
+    @Primary(auto = true)
+    private int Id_Vente;
+    private double Total;
+    @Col(name = "Date_vente")
+    private Timestamp dateVente;
+
+    @OneToMany(Details_Ventes.class)
+    private List<Details_Ventes> composant;
+
+     @FK(Clients.class)
+    @Col(name = "Id_Client")
+    private Clients Id_Client;
+
+    public Clients getClient() {
+        return Id_Client;
+    }
+
+    public void setClient(Clients id_Client) {
+        Id_Client = id_Client;
+    }
+
+    public int getIdVente() {
+        return Id_Vente;
+    }
+
+    public void setIdVente(int idVente) {
+        this.Id_Vente = idVente;
+    }
+
+    public double getTotal() {
+        return Total;
+    }
+
+    public void setTotal(double total) {
+        this.Total = total;
+    }
+
+    public Timestamp getDateVente() {
+        return dateVente;
+    }
+
+    public void setDateVente(Timestamp dateVente) {
+        this.dateVente = dateVente;
+    }
+
+    public List<Details_Ventes> getComposant() {
+        return composant;
+    }
+
+    public void setComposant(List<Details_Ventes> composant) {
+        this.composant = composant;
+    }
+
+    
+
+
+
+}
+
+
+package model;
+
+import org.entityframework.tools.Col;
+import org.entityframework.tools.FK;
+import org.entityframework.tools.Primary;
+import org.entityframework.tools.Table;
+
+@Table(name = "Details_Ventes")
+public class Details_Ventes {
+    @Primary(auto = true)
+    @Col(name = "Id_Details_Ventes")
+    private int idDetailsVentes;
+    @FK(Vente.class)
+    @Col(name = "Id_Vente")
+    private int idVente;
+  
+    private double qtt;
+
+    @FK(Produit.class)
+    @Col(name = "Id_Produit")
+    private Produit idProduit;
+
+    public int getIdVente() {
+        return idVente;
+    }
+
+    public void setIdVente(int idVente) {
+        this.idVente = idVente;
+    }
+
+    public int getIdDetailsVentes() {
+        return idDetailsVentes;
+    }
+
+    public void setIdDetailsVentes(int idDetailsVentes) {
+        this.idDetailsVentes = idDetailsVentes;
+    }
+
+    public double getQtt() {
+        return qtt;
+    }
+
+    public void setQtt(double qtt) {
+        this.qtt = qtt;
+    }
+
+    public Produit getIdProduit() {
+        return idProduit;
+    }
+
+    public void setIdProduit(Produit idProduit) {
+        this.idProduit = idProduit;
+    }
+}
+
+
+package model;
+
+import org.entityframework.tools.Primary;
+import org.entityframework.tools.Table;
+
+@Table(name="Clients")
+public class Clients {
+    @Primary(auto=true)
+    private int Id_Client;
+    private String Nom;
+    
+    public int getId_Client() {
+        return Id_Client;
+    }
+    public void setId_Client(int id_Client) {
+        Id_Client = id_Client;
+    }
+    public String getNom() {
+        return Nom;
+    }
+    public void setNom(String nom) {
+        Nom = nom;
+    }
+
+    
+    
+}
+

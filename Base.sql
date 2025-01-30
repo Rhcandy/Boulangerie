@@ -11,6 +11,7 @@ CREATE TABLE Recettes(
    Id_Recettes SERIAL,
    PRIMARY KEY(Id_Recettes)
 );
+ALTER TABLE recettes add COLUMN nom varchar(10);
 
 CREATE TABLE Unites(
    Id_Unite SERIAL,
@@ -35,6 +36,14 @@ CREATE TABLE Produit(
    FOREIGN KEY(Id_Recettes) REFERENCES Recettes(Id_Recettes),
    FOREIGN KEY(Id_Categorie) REFERENCES Categories(Id_Categorie)
 );
+
+ create table HistoPrixProduit(
+    Id_H serial primary key,
+    Id_prod int ,
+    Date_insert date,
+    Prix NUMERIC(10,2),
+    FOREIGN KEY (Id_prod) REFERENCES Produit(Id_Produit)
+ );
 
 CREATE TABLE Ingredients(
    Id_Ingredients SERIAL,
@@ -342,5 +351,233 @@ INSERT INTO Suggestion (Id_Produit, Date_deb, Date_fin, Descri) VALUES
 (1, '2025-01-22 08:00:00', '2025-01-30 20:00:00', 'Fete du pain : Offres speciales sur toutes les baguettes !'),
 (3, '2025-02-20 10:00:00', '2025-02-28 20:00:00', 'Decouvrez notre tarte au chocolat avec une touche de noisette pour un plaisir gourmand.');
 
+
+create Table Clients(
+    Id_Client serial PRIMARY key,
+    nom VARCHAR(50)
+);
+
+Alter table vente add COLUMN Id_Client int;
+alter table vente ADD constraint fk_Id_client FOREIGN KEY (Id_Client) REFERENCES Clients(Id_Client); 
+
+-- Insertion des clients
+INSERT INTO Clients (nom) VALUES
+('Jean Dupont'),
+('Marie Curie'),
+('Alice Martin');
+
+-- Mise à jour de la table Vente
+INSERT INTO Vente (Total, Date_vente, Id_Client) VALUES
+(25.50, '2025-01-15 12:00:00', 1),
+(13.20, '2025-01-16 15:00:00', 2),
+(45.00, '2025-01-17 09:30:00', 3);
+
+INSERT INTO Details_Ventes (Id_Vente, qtt, Id_Produit) VALUES
+(1, 3, 1), -- 3 baguettes pour la première vente
+(2, 2, 2), -- 2 croissants pour la deuxième vente
+(3, 1, 3); -- 1 tarte au chocolat pour la troisième vente
+
+
+CREATE Table Roles (
+    Id_Role serial PRIMARY key,
+    Nom VARCHAR(50)
+);
+
+create table Employe(
+    Id_Employe serial PRIMARY key,
+    Id_Role int,
+    Nom VARCHAR(50),
+    FOREIGN key (Id_Role) REFERENCES Roles(Id_Role)
+);
+
+alter table Vente ADD COLUMN Id_Employe int;
+alter table Vente add constraint fk_Id_Employe FOREIGN key (Id_Employe) REFERENCES Employe(Id_Employe);
+
+CREATE TABLE Vente(
+   Id_Vente SERIAL PRIMARY KEY,
+   Total NUMERIC(15,2)  ,
+   Date_vente TIMESTAMP,
+   Id_Client int,
+   Id_Employe int,
+   FOREIGN key (Id_Client) REFERENCES Clients(Id_Clients),
+   FOREIGN KEY (Id_Employe) REFERENCES Employe(Id_Employe)
+);
+
+create table Employe(
+    Id_Employe serial PRIMARY key,
+    Id_Role int,
+    Nom VARCHAR(50),
+    FOREIGN key (Id_Role) REFERENCES Roles(Id_Role)
+);
+
+cree moi une fonction qui a pour argument % commission , date deut , date fin ; qui retourne Id_Employe , totale = (somme ventes employes entre les 2 dates * % commisions) et le nombres totales de ventes pour cette employe,
+
+INSERT INTO Roles (Nom) VALUES
+('Vendeur'),
+('Manager'),
+('Caissier'),
+('Livreur');
+
+create table genre(
+    Id_Genre serial PRIMARY key,
+    Nom varchar(50)
+);
+
+
+INSERT INTO Employe (Id_Role, Nom) VALUES
+(1, 'Pierre Dubois'),  -- Vendeur
+(1, 'Sophie Lefevre'),  -- Manager
+(3, 'Maxime Robert'),  -- Caissier
+(4, 'Lucie Martin');
+
+
+alter table Employe add COLUMN Id_Genre int;
+alter table Employe add constraint fk_id_genre FOREIGN key (Id_Genre) REFERENCES genre(Id_Genre);     -- Livreur
+
+
+-- Mise à jour de la table Vente avec l'Id_Employe
+UPDATE Vente SET Id_Employe = 1 WHERE Id_Vente = 1;  -- Vente 1 attribuée à Pierre Dubois (Vendeur)
+UPDATE Vente SET Id_Employe = 2 WHERE Id_Vente = 2;  -- Vente 2 attribuée à Sophie Lefevre (Manager)
+-- UPDATE Vente SET Id_Employe = 3 WHERE Id_Vente = 3;  -- Vente 3 attribuée à Maxime Robert (Caissier)
+UPDATE Vente SET Id_Employe = 1 WHERE Id_Vente = 3;
+UPDATE Vente SET Id_Employe = 2 WHERE Id_Vente = 4;UPDATE Vente SET Id_Employe = 1 WHERE Id_Vente = 7;
+UPDATE Vente SET Id_Employe = 2 WHERE Id_Vente = 5;
+UPDATE Vente SET Id_Employe = 1 WHERE Id_Vente = 6;
+
+
+
+INSERT INTO Vente (Total, Date_vente, Id_Client, Id_Employe) VALUES
+(25.50, '2025-01-15 12:00:00', 1, 1),  -- Vente 1 par Pierre Dubois
+(13.20, '2025-01-16 15:00:00', 2, 2),  -- Vente 2 par Sophie Lefevre
+(45.00, '2025-01-17 09:30:00', 3, 3);  -- Vente 3 par Maxime Robert
+
+
+
+
+
+CREATE OR REPLACE FUNCTION calculer_commission(
+    p_commission NUMERIC(5,2), -- Pourcentage de commission
+    p_date_debut TIMESTAMP DEFAULT NULL, -- Date de début (peut être NULL)
+    p_date_fin TIMESTAMP DEFAULT NULL    -- Date de fin (peut être NULL)
+)
+RETURNS TABLE (
+    Id_Employe INT,  -- Assurez-vous que le type est integer
+    Total_Commission NUMERIC(15,2),
+    Nombre_Total_Ventes INT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        CAST(v.Id_Employe AS INT) AS Id_Employe,  -- Conversion explicite en INT
+        CAST(COALESCE(SUM(v.Total), 0) * (p_commission / 100) AS NUMERIC(15,2)) AS Total_Commission, -- Conversion explicite
+        CAST(COUNT(v.Id_Vente) AS INT) AS Nombre_Total_Ventes -- Conversion explicite
+    FROM
+        Vente v
+    WHERE
+        (
+            (p_date_debut IS NULL AND p_date_fin IS NULL) OR
+            (p_date_debut IS NOT NULL AND p_date_fin IS NULL AND v.Date_vente = p_date_debut) OR
+            (p_date_debut IS NOT NULL AND p_date_fin IS NOT NULL AND v.Date_vente BETWEEN p_date_debut AND p_date_fin)
+        )
+    GROUP BY
+        v.Id_Employe;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION calculer_commission(
+    p_commission NUMERIC(5,2),
+    p_date_debut TIMESTAMP DEFAULT NULL,
+    p_date_fin TIMESTAMP DEFAULT NULL,
+    p_id_genre INTEGER DEFAULT NULL
+)
+RETURNS TABLE (
+    id_employe INTEGER,
+    total_commission NUMERIC(15,2),
+    nombre_total_ventes INTEGER
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        e.Id_Employe,
+        e.nom,
+        COALESCE(SUM(CASE WHEN v.total > 200000 THEN v.total ELSE 0 END), 0) * (p_commission / 100) AS total_commission,
+        COUNT(v.id) AS nombre_total_ventes
+    FROM
+        employe e
+        LEFT JOIN vente v ON v.id_employe = e.id
+        LEFT JOIN genre g ON e.id_genre = g.id
+    WHERE
+        (
+            (p_date_debut IS NULL AND p_date_fin IS NULL) OR
+            (p_date_debut IS NOT NULL AND p_date_fin IS NULL AND v.date_vente::date = p_date_debut::date) OR
+            (p_date_debut IS NOT NULL AND p_date_fin IS NOT NULL AND v.date_vente BETWEEN p_date_debut AND p_date_fin)
+        )
+        AND (p_id_genre IS NULL OR g.id = p_id_genre)
+    GROUP BY
+        e.Id_Employe;
+END;
+$$ LANGUAGE plpgsql;
+
+
+SELECT * FROM calculer_commission(5, '2023-01-01', '2025-12-31', NULL);
+
+
+CREATE OR REPLACE FUNCTION calculer_commission(
+    p_commission NUMERIC(5,2),
+    p_date_debut TIMESTAMP DEFAULT NULL,
+    p_date_fin TIMESTAMP DEFAULT NULL,
+    p_id_genre INTEGER DEFAULT NULL
+)
+RETURNS TABLE (CREATE OR REPLACE FUNCTION calculer_commission(
+    p_commission NUMERIC(5,2),
+    p_date_debut TIMESTAMP DEFAULT NULL,
+    p_date_fin TIMESTAMP DEFAULT NULL,
+    p_id_genre INTEGER DEFAULT NULL
+)
+RETURNS TABLE (
+    id_employe INTEGER,
+    total_commission NUMERIC(15,2),
+    nombre_total_ventes INTEGER
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        e.Id_Employe,
+        COALESCE(SUM(v.Total), 0) * (p_commission / 100) AS total_commission,
+        COUNT(v.Id) AS nombre_total_ventes
+    id_employe INTEGER,
+    total_commission NUMERIC(15,2),
+    nombre_total_ventes INTEGER
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        e.Id_Employe,
+        COALESCE(SUM(CASE WHEN v.Total > 200000 THEN v.Total ELSE 0 END), 0) * (p_commission / 100) AS total_commission,
+        COUNT(v.Id) AS nombre_total_ventes
+    FROM
+        employe e
+        LEFT JOIN vente v ON v.Id_Employe = e.Id_Employe
+        LEFT JOIN genre g ON e.Id_Genre = g.Id_Genre
+    WHERE
+        (
+            (p_date_debut IS NULL AND p_date_fin IS NULL) OR
+            (p_date_debut IS NOT NULL AND p_date_fin IS NULL AND v.Date_vente::date = p_date_debut::date) OR
+            (p_date_debut IS NOT NULL AND p_date_fin IS NOT NULL AND v.Date_vente BETWEEN p_date_debut AND p_date_fin)
+        )
+        AND (p_id_genre IS NULL OR g.Id_Genre = p_id_genre)
+    GROUP BY
+        e.Id_Employe;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT * FROM calculer_commission(5.0, NULL, NULL, 1);
+/*
+
+DROP FUNCTION IF EXISTS calculer_commission(NUMERIC);
+DROP FUNCTION IF EXISTS calculer_commission(NUMERIC, TIMESTAMP);
+DROP FUNCTION IF EXISTS calculer_commission(NUMERIC, TIMESTAMP, TIMESTAMP);
+DROP FUNCTION IF EXISTS calculer_commission(NUMERIC, TIMESTAMP, TIMESTAMP, INTEGER);
 
 

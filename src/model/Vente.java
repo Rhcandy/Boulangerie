@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import org.entityframework.tools.Col;
+import org.entityframework.tools.FK;
 import org.entityframework.tools.OneToMany;
 import org.entityframework.tools.Primary;
 import org.entityframework.tools.Table;
@@ -18,6 +19,22 @@ public class Vente {
 
     @OneToMany(Details_Ventes.class)
     private List<Details_Ventes> composant;
+
+     @FK(Clients.class)
+    @Col(name = "Id_Client")
+    private Clients Id_Client;
+
+    @FK(Employe.class)
+    @Col(name="Id_Employe")
+    private Employe Id_Employe;
+
+    public Clients getClient() {
+        return Id_Client;
+    }
+
+    public void setClient(Clients id_Client) {
+        Id_Client = id_Client;
+    }
 
     public int getIdVente() {
         return Id_Vente;
@@ -49,6 +66,13 @@ public class Vente {
 
     public void setComposant(List<Details_Ventes> composant) {
         this.composant = composant;
+    }
+
+    public Employe getId_Employe() {
+        return Id_Employe;
+    }
+    public void setId_Employe(Employe id_Employe) {
+        Id_Employe = id_Employe;
     }
 
     

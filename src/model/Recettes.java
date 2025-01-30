@@ -11,6 +11,8 @@ public class Recettes {
     @Primary(auto = true)
     private int Id_Recettes;
 
+    private String nom="recette";
+
     @OneToMany(Details_Recettes.class)
     private List<Details_Recettes> composant;
     

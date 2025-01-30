@@ -72,7 +72,7 @@ public class Produit {
         return result;
     }
 
-    public  double getprixvente(){
+    /* public  double getprixvente(){
         double result=0;
         try(GenericEntity service=new GenericEntity(Connector.getConnection());) {
           RowResult resul=service.execute("SELECT prix_vente FROM vue_prix_vente where Id_Produit = ?",this.getId_Produit());
@@ -83,7 +83,32 @@ public class Produit {
            System.out.println(e.getMessage());
         }
         return result;
-    } 
+    } */ 
+
+    public  double getprixvente(){
+        double result=0;
+        try(GenericEntity service=new GenericEntity(Connector.getConnection());) {
+          RowResult resul=service.execute("SELECT Prix FROM HistoPrixProduit WHERE Id_prod =  ? ORDER BY Id_H DESC LIMIT 1;",this.getId_Produit());
+            if (resul.next()) {
+                return resul.getDouble("prix"); // Supposons que RowResult a une méthode pour obtenir le ResultSet
+            }
+        } catch (Exception e) {
+           System.out.println(e.getMessage());
+        }
+        return result;
+    }
+    public void setprixvente(double vidinny){
+        try(GenericEntity service=new GenericEntity(Connector.getConnection());) {
+            service.execute("insert into HistoPrixProduit (Id_prod,Date_insert,Prix) values (?,NOW(),?)", this.getId_Produit(),vidinny);
+        } catch (Exception e) {
+             System.out.println(e.getMessage());
+        }
+    }
+ 
+    
+
+
+
 
     
 
