@@ -16,9 +16,15 @@ public class Details_Recettes {
     @Col(name = "Id_Recettes")
     private int Id_Recettes;
 
+    public void setId_Recettes(int id_Recettes) {
+        Id_Recettes = id_Recettes;
+    }
+
     @FK(Ingredients.class)
     @Col(name = "Id_Ingredients")
     private Ingredients Ingredients;
+
+    
 
     public int getIdDetailsRecettes() {
         return Id_Details_Recettes;

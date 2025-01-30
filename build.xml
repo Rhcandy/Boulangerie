@@ -7,7 +7,7 @@
     <property name="dist.dir" value="dist"/>
     <property name="lib.dir" value="lib"/>
     <property name="war.name" value="Boulangerie"/>
-    <property name="wildfly.deploy.dir" value="E:\ando_itu\L2\s3\Programmation\apache-tomcat-9.0.82\webapps"/>
+    <property name="wildfly.deploy.dir" value="F:\serveur\wildfly-26.1.2.Final\standalone\deployments"/>
 
     <!-- Nettoyage des répertoires de compilation et de distribution -->
     <target name="clean">

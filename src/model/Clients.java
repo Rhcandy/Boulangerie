@@ -3,9 +3,9 @@ package model;
 import org.entityframework.tools.Primary;
 import org.entityframework.tools.Table;
 
-@Table(name = "Clients")
+@Table(name="Clients")
 public class Clients {
-    @Primary(auto = true)
+    @Primary(auto=true)
     private int Id_Client;
     private String Nom;
     
@@ -22,4 +22,7 @@ public class Clients {
         Nom = nom;
     }
 
+    
+    
 }
+

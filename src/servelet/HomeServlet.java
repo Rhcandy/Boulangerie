@@ -36,8 +36,7 @@ public class HomeServlet extends HttpServlet {
              List<Fabrication> Fabrications =service.findWhere(Fabrication.class,"Dt_Expiration > NOW() ");
              List<Categories> categories =service.findAll(Categories.class);
              List<Vente> ventes = service.findAll(Vente.class);
-             /* List<Suggestion> suggestion =service.findWhere(Suggestion.class,"Date_fin >= NOW() "); */
-             List<Suggestion> suggestion =service.findAll(Suggestion.class);
+             List<Suggestion> suggestion =service.findWhere(Suggestion.class,"Date_fin >= NOW() ");
 
              request.setAttribute("Produits", Produits);
              request.setAttribute("Ingredients", Ingredients);
